@@ -1,6 +1,8 @@
 accelerate
 aioboto3
 aiohttp
+numpy
+tqdm
 
 # database packages
 graspologic
@@ -26,3 +28,4 @@ tiktoken
 torch
 transformers
 xxhash
+kuzu

@@ -1,3 +1,4 @@
+import asyncio
 import base64
 import copy
 import json
@@ -11,7 +12,6 @@ import aiohttp
 import numpy as np
 import ollama
 import torch
-import time
 from openai import (
     AsyncOpenAI,
     APIConnectionError,
@@ -61,7 +61,7 @@ async def openai_complete_if_cache(
 ) -> str:
     if api_key:
         os.environ["OPENAI_API_KEY"] = api_key
-    time.sleep(2)
+    await asyncio.sleep(2)
     openai_async_client = (
         AsyncOpenAI() if base_url is None else AsyncOpenAI(base_url=base_url)
     )

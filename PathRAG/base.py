@@ -15,12 +15,12 @@ T = TypeVar("T")
 
 @dataclass
 class QueryParam:
-    mode: Literal["hybrid"] = "global"
+    mode: Literal["hybrid"] = "hybrid"
     only_need_context: bool = False
     only_need_prompt: bool = False
     response_type: str = "Multiple Paragraphs"
     stream: bool = False
-    top_k: int =40
+    top_k: int = 40
     max_token_for_text_unit: int = 4000
     max_token_for_global_context: int = 3000
     max_token_for_local_context: int = 5000

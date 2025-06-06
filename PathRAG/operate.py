@@ -6,7 +6,6 @@ from typing import Union
 from collections import Counter, defaultdict
 import warnings
 import tiktoken
-import time
 import csv
 from .utils import (
     logger,
@@ -255,7 +254,6 @@ async def extract_entities(
     relationships_vdb: BaseVectorStorage,
     global_config: dict,
 ) -> Union[BaseGraphStorage, None]:
-    time.sleep(20)
     use_llm_func: callable = global_config["llm_model_func"]
     entity_extract_max_gleaning = global_config["entity_extract_max_gleaning"]
 
