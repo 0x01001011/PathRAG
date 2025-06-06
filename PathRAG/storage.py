@@ -291,12 +291,13 @@ class NetworkXStorage(BaseGraphStorage):
             return list(self._graph.out_edges(source_node_id))
         return None
     
-    async def get_pagerank(self,source_node_id:str):
-        pagerank_list=nx.pagerank(self._graph)
-        if source_node_id in pagerank_list:
-            return pagerank_list[source_node_id]
-        else:
-            print("pagerank failed")
+    async def get_pagerank(self, source_node_id: str) -> Union[float, None]:
+        """Return the PageRank value for ``source_node_id`` if available."""
+        pagerank_map = nx.pagerank(self._graph)
+        result = pagerank_map.get(source_node_id)
+        if result is None:
+            logger.warning("pagerank failed for node %s", source_node_id)
+        return result
 
     async def upsert_node(self, node_id: str, node_data: dict[str, str]):
         self._graph.add_node(node_id, **node_data)
