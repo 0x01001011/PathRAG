@@ -75,6 +75,7 @@ ChromaVectorDBStorage = lazy_external_import(".kg.chroma_impl", "ChromaVectorDBS
 TiDBKVStorage = lazy_external_import(".kg.tidb_impl", "TiDBKVStorage")
 TiDBVectorDBStorage = lazy_external_import(".kg.tidb_impl", "TiDBVectorDBStorage")
 AGEStorage = lazy_external_import(".kg.age_impl", "AGEStorage")
+KuzuGraphStorage = lazy_external_import(".kg.kuzu_impl", "KuzuGraphStorage")
 
 
 def always_get_an_event_loop() -> asyncio.AbstractEventLoop:
@@ -117,7 +118,7 @@ class PathRAG:
     )
     kv_storage: str = field(default="JsonKVStorage")
     vector_storage: str = field(default="NanoVectorDBStorage")
-    graph_storage: str = field(default="NetworkXStorage")
+    graph_storage: str = field(default="KuzuGraphStorage")
 
     current_log_level = logger.level
     log_level: str = field(default=current_log_level)
@@ -267,6 +268,7 @@ class PathRAG:
             "Neo4JStorage": Neo4JStorage,
             "OracleGraphStorage": OracleGraphStorage,
             "AGEStorage": AGEStorage,
+            "KuzuGraphStorage": KuzuGraphStorage,
 
         }
 
@@ -515,7 +517,7 @@ class PathRAG:
                     global_config=asdict(self),
                 ),
             )
-            print("response all ready")
+            logger.info("Query completed")
         else:
             raise ValueError(f"Unknown mode {param.mode}")
         await self._query_done()

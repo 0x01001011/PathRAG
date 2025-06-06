@@ -4,11 +4,16 @@ The code for the paper **"PathRAG: Pruning Graph-based Retrieval Augmented Gener
 cd PathRAG
 pip install -e .
 ```
+This package requires optional dependencies when using certain backends. To enable
+the default Kuzu graph storage, install the `kuzu` package:
+```bash
+pip install kuzu
+```
 ## Quick Start
-* You can quickly experience this project in the `v1_test.py` file.
-* Set OpenAI API key in environment if using OpenAI models: `api_key="sk-...".` in the `v1_test.py` and `llm.py` file
+* You can quickly experience this project in the `examples/v1_example.py` file.
+* Set OpenAI API key in environment if using OpenAI models: `api_key="sk-...".` in the `examples/v1_example.py` and `llm.py` file
 * Prepare your retrieval document "text.txt".
-* Use the following Python snippet in the "v1_text.py" file to initialize PathRAG and perform queries.
+* Use the following Python snippet in the `examples/v1_example.py` file to initialize PathRAG and perform queries.
   
 ```python
 import os
@@ -36,6 +41,43 @@ with open(data_file) as f:
     rag.insert(f.read())
 
 print(rag.query(question, param=QueryParam(mode="hybrid")))
+```
+
+## API Reference
+
+`PathRAG` exposes a small set of high-level methods:
+
+- `insert(text_or_list)` – chunk and index new documents
+- `insert_custom_kg(graph_dict)` – load an existing knowledge graph
+- `query(question, param=QueryParam())` – retrieve context and generate an answer
+- `delete_by_entity(name)` – remove all data related to an entity
+
+Synchronous calls have async counterparts (`ainsert`/`aquery`).
+
+By default `PathRAG` uses `KuzuGraphStorage` to persist and query the knowledge graph.
+You can switch to the in-memory `NetworkXStorage` by passing `graph_storage="NetworkXStorage"`.
+
+## Command Line Interface
+
+PathRAG also provides a simple CLI for inserting documents, querying and deleting entities. Run it using the module syntax:
+
+```bash
+python -m PathRAG.cli insert --file text.txt --working-dir ./cache
+python -m PathRAG.cli query --question "What is PathRAG?" --working-dir ./cache
+python -m PathRAG.cli delete --entity "SOME_ENTITY" --working-dir ./cache
+```
+
+The CLI shares the same defaults as the Python API and reads your OpenAI credentials from the environment.
+
+## Dagster Assets with S3
+
+PathRAG can be integrated into a Dagster pipeline. The `examples/dagster_assets.py` file
+defines three assets that index a text document and run a query while storing
+asset materializations on S3 using `S3PickleIOManager`.
+
+```bash
+pip install dagster dagster-aws
+dagster dev -m examples.dagster_assets
 ```
 ## Parameter modification
 You can adjust the relevant parameters in the `base.py` and `operate.py` files.
