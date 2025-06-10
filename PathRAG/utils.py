@@ -104,21 +104,22 @@ def compute_mdhash_id(content, prefix: str = ""):
 
 
 def limit_async_func_call(max_size: int, waitting_time: float = 0.0001):
+    """Limit concurrent async function calls using a semaphore."""
 
+    if max_size <= 0:
+        # Unlimited concurrency requested
+        def identity(func):
+            return func
+
+        return identity
+
+    semaphore = asyncio.Semaphore(max_size)
 
     def final_decro(func):
-
-        __current_size = 0
-
         @wraps(func)
         async def wait_func(*args, **kwargs):
-            nonlocal __current_size
-            while __current_size >= max_size:
-                await asyncio.sleep(waitting_time)
-            __current_size += 1
-            result = await func(*args, **kwargs)
-            __current_size -= 1
-            return result
+            async with semaphore:
+                return await func(*args, **kwargs)
 
         return wait_func
 
@@ -183,7 +184,7 @@ def clean_str(input: Any) -> str:
 
 
     if not isinstance(input, str):
-        return input
+        return str(input)
 
     result = html.unescape(input.strip())
 
